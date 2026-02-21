@@ -175,44 +175,43 @@ export default function App() {
             </label>
 
             <input
+              id="file-upload"
               type="file"
               ref={fileInputRef}
               onChange={handleImageUpload}
-              accept="image/png, image/jpeg, image/webp, image/heic, image/heif"
+              accept="image/*"
               className="hidden"
             />
 
             {!sourceImage ? (
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full aspect-square max-h-[300px] bg-zinc-900 border-2 border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-3 hover:bg-zinc-800/50 hover:border-zinc-700 transition-all group"
+              <label
+                htmlFor="file-upload"
+                className="w-full aspect-square max-h-[300px] bg-zinc-900 border-2 border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-3 hover:bg-zinc-800/50 hover:border-zinc-700 transition-all group cursor-pointer"
               >
-                <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center group-hover:scale-110 transition-transform pointer-events-none">
                   <Upload className="w-5 h-5 text-zinc-400" />
                 </div>
-                <div className="text-center">
+                <div className="text-center pointer-events-none">
                   <p className="text-sm font-medium text-zinc-300">Tap to choose</p>
                   <p className="text-xs text-zinc-500 mt-1">PNG, JPG, WEBP</p>
                 </div>
-              </button>
+              </label>
             ) : (
               <div className="relative group rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800">
                 <img
                   src={sourceImage.url}
                   alt="Source"
-                  className="w-full h-auto max-h-[400px] object-contain"
+                  className="w-full h-auto max-h-[400px] object-contain pointer-events-none"
                 />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm"
+                <label
+                  htmlFor="file-upload"
+                  className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm cursor-pointer"
                 >
-                  <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-sm font-medium">
+                  <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-sm font-medium pointer-events-none">
                     <Upload className="w-4 h-4" />
                     Change image
                   </div>
-                </button>
+                </label>
               </div>
             )}
           </section>
