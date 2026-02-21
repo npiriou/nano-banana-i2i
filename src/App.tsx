@@ -22,7 +22,7 @@ export default function App() {
       const base64String = reader.result as string;
       const mimeType = file.type;
       const data = base64String.split(',')[1];
-      
+
       setSourceImage({
         data,
         mimeType,
@@ -35,7 +35,7 @@ export default function App() {
 
   const generateImage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    
+
     if (!apiKey) {
       setError('Please enter a Gemini API Key.');
       return;
@@ -53,13 +53,13 @@ export default function App() {
     setError(null);
 
     try {
-      const ai = new GoogleGenAI({ 
-  apiKey: apiKey,
-  httpOptions: { 
-    apiVersion: model.includes('preview') ? 'v1beta' : 'v1' 
-  }
-});
-      
+      const ai = new GoogleGenAI({
+        apiKey: apiKey,
+        httpOptions: {
+          apiVersion: 'v1alpha'
+        }
+      });
+
       const config: any = {
         responseModalities: ['IMAGE', 'TEXT'],
       };
@@ -98,7 +98,7 @@ export default function App() {
         if (!chunk.candidates || !chunk.candidates[0].content || !chunk.candidates[0].content.parts) {
           continue;
         }
-        
+
         const inlineData = chunk.candidates?.[0]?.content?.parts?.[0]?.inlineData;
         if (inlineData) {
           const imageUrl = `data:${inlineData.mimeType || 'image/png'};base64,${inlineData.data}`;
@@ -136,7 +136,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-50 font-sans selection:bg-indigo-500/30">
       <div className="max-w-md mx-auto p-4 sm:p-6 flex flex-col gap-6">
-        
+
         {/* Header */}
         <header className="flex items-center gap-3 pt-4 pb-2 border-b border-zinc-800">
           <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400">
@@ -173,7 +173,7 @@ export default function App() {
               <ImageIcon className="w-4 h-4 text-zinc-500" />
               Source Image
             </label>
-            
+
             <input
               type="file"
               ref={fileInputRef}
@@ -181,7 +181,7 @@ export default function App() {
               accept="image/png, image/jpeg, image/webp, image/heic, image/heif"
               className="hidden"
             />
-            
+
             {!sourceImage ? (
               <button
                 type="button"
@@ -198,9 +198,9 @@ export default function App() {
               </button>
             ) : (
               <div className="relative group rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800">
-                <img 
-                  src={sourceImage.url} 
-                  alt="Source" 
+                <img
+                  src={sourceImage.url}
+                  alt="Source"
                   className="w-full h-auto max-h-[400px] object-contain"
                 />
                 <button
@@ -265,7 +265,7 @@ export default function App() {
           <section className="space-y-4 pt-4 border-t border-zinc-800 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-medium text-zinc-300">Result</h2>
-              <button 
+              <button
                 onClick={handleDownload}
                 className="text-xs flex items-center gap-1.5 text-indigo-400 hover:text-indigo-300 transition-colors bg-indigo-500/10 px-3 py-1.5 rounded-full"
               >
@@ -274,15 +274,15 @@ export default function App() {
               </button>
             </div>
             <div className="rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 shadow-2xl">
-              <img 
-                src={resultImage} 
-                alt="Generated result" 
+              <img
+                src={resultImage}
+                alt="Generated result"
                 className="w-full h-auto"
               />
             </div>
           </section>
         )}
-        
+
         <div className="h-8" /> {/* Bottom padding for mobile */}
       </div>
     </div>
