@@ -17,20 +17,64 @@ export default function App() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = reader.result as string;
-      const mimeType = file.type;
-      const data = base64String.split(',')[1];
+    // Reset input so the user can upload the same file again if they cancel
+    e.target.value = '';
 
-      setSourceImage({
-        data,
-        mimeType,
-        url: base64String
-      });
-      setResultImage(null);
+    const imageUrl = URL.createObjectURL(file);
+    const img = new window.Image();
+
+    img.onload = () => {
+      const MAX_SIZE = 1536; // Keep it within Gemini's limits but high res
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > MAX_SIZE) {
+          height = Math.round(height * (MAX_SIZE / width));
+          width = MAX_SIZE;
+        }
+      } else {
+        if (height > MAX_SIZE) {
+          width = Math.round(width * (MAX_SIZE / height));
+          height = MAX_SIZE;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+
+      if (ctx) {
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        setSourceImage({
+          data: dataUrl.split(',')[1],
+          mimeType: 'image/jpeg',
+          url: dataUrl
+        });
+        setResultImage(null);
+      }
+      URL.revokeObjectURL(imageUrl);
     };
-    reader.readAsDataURL(file);
+
+    img.onerror = () => {
+      // Fallback if image fails to load via Canvas
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setSourceImage({
+          data: base64String.split(',')[1],
+          mimeType: file.type || 'image/jpeg',
+          url: base64String
+        });
+        setResultImage(null);
+      };
+      reader.readAsDataURL(file);
+      URL.revokeObjectURL(imageUrl);
+    };
+
+    img.src = imageUrl;
   };
 
   const generateImage = async (e?: React.FormEvent) => {
@@ -179,8 +223,8 @@ export default function App() {
               type="file"
               ref={fileInputRef}
               onChange={handleImageUpload}
-              accept="image/*"
-              className="hidden"
+              accept="image/jpeg, image/png, image/webp"
+              className="sr-only"
             />
 
             {!sourceImage ? (
