@@ -1,0 +1,5 @@
+{
+  "name": "Nano Banana Img2Img",
+  "description": "A basic mobile-first image-to-image app using Gemini 3 Pro Image Preview.",
+  "requestFramePermissions": []
+}
